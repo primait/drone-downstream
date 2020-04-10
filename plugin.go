@@ -29,6 +29,11 @@ type Plugin struct {
 
 // Exec runs the plugin
 func (p *Plugin) Exec() error {
+	if os.Getenv("DRONE_COMMIT_MESSAGE") == "shutdown" {
+		fmt.Printf("Info: downstream skipped due to shutdown commit message")
+		return nil
+	}
+
 	if len(p.Token) == 0 {
 		return fmt.Errorf("Error: you must provide your Drone access token.")
 	}

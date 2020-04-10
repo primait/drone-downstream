@@ -1,4 +1,4 @@
-module github.com/drone-plugins/drone-downstream
+module github.com/primait/drone-downstream
 
 require (
 	github.com/drone/drone-go v1.0.5
