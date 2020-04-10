@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 
@@ -85,11 +84,6 @@ func (p *Plugin) Exec() error {
 			if branch == "" {
 				return fmt.Errorf("Error: build no or branch must be mentioned for deploy, format repository@build/branch")
 			}
-			if _, err := strconv.Atoi(branch); err != nil && !p.LastSuccessful {
-				return fmt.Errorf("Error: for deploy build no must be numeric only " +
-					" or for branch deploy last_successful should be true," +
-					" format repository@build/branch")
-			}
 		}
 
 		waiting := false
@@ -128,11 +122,22 @@ func (p *Plugin) Exec() error {
 							return fmt.Errorf("Error: unable to get last successful build for %s", entry)
 						}
 					} else {
-						// Get build by number
-						buildNumber, _ := strconv.Atoi(branch)
-						build, err = client.Build(owner, name, buildNumber)
+						fmt.Printf("Info: searching revision %s in %s/%s.\n", branch, owner, name)
+						// Get build by revision
+						builds, err := client.BuildList(owner, name, opts)
 						if err != nil {
-							return fmt.Errorf("Error: unable to get requested build %v for deploy for %s", buildNumber, entry)
+							return fmt.Errorf("Error: unable to get build list for %s", entry)
+						}
+
+						for _, b := range builds {
+							commit := b.After
+							if commit[0:15] == branch {
+								build = b
+								break
+							}
+						}
+						if build == nil {
+							return fmt.Errorf("Error: unable to get build for %s", entry)
 						}
 					}
 					if p.Wait && !waiting && (build.Status == drone.StatusRunning || build.Status == drone.StatusPending) {
