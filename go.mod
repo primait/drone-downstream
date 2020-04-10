@@ -1,7 +1,7 @@
 module github.com/primait/drone-downstream
 
 require (
-	github.com/drone/drone-go v1.0.5
+	github.com/drone/drone-go v1.3.1
 	github.com/google/go-cmp v0.3.0 // indirect
 	github.com/joho/godotenv v1.3.0
 	github.com/sirupsen/logrus v1.3.0

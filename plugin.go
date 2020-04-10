@@ -107,12 +107,13 @@ func (p *Plugin) Exec() error {
 				return fmt.Errorf("Error: timed out waiting on a build for %s.\n", entry)
 			// Got a tick, we should check on the build status
 			case <-tick:
+				opts := drone.ListOptions{Page: 1, Size: 200}
 				// first handle the deploy trigger
 				if len(p.Deploy) != 0 {
 					var build *drone.Build
 					if p.LastSuccessful {
 						// Get the last successful build of branch
-						builds, err := client.BuildList(owner, name, drone.ListOptions{})
+						builds, err := client.BuildList(owner, name, opts)
 						if err != nil {
 							return fmt.Errorf("Error: unable to get build list for %s", entry)
 						}
@@ -167,7 +168,7 @@ func (p *Plugin) Exec() error {
 					waiting = true
 					continue
 				} else if p.LastSuccessful && build.Status != drone.StatusPassing {
-					builds, err := client.BuildList(owner, name, drone.ListOptions{})
+					builds, err := client.BuildList(owner, name, opts)
 					if err != nil {
 						return fmt.Errorf("Error: unable to get build list for %s.\n", entry)
 					}
