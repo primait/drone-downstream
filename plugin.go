@@ -101,7 +101,7 @@ func (p *Plugin) Exec() error {
 				return fmt.Errorf("Error: timed out waiting on a build for %s.\n", entry)
 			// Got a tick, we should check on the build status
 			case <-tick:
-				opts := drone.ListOptions{Page: 1, Size: 200}
+				opts := drone.ListOptions{Page: 1, Size: 100}
 				// first handle the deploy trigger
 				if len(p.Deploy) != 0 {
 					var build *drone.Build
