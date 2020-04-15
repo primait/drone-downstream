@@ -155,14 +155,14 @@ func (p *Plugin) Exec() error {
 					}
 					if (build.Status != drone.StatusRunning && build.Status != drone.StatusPending) || !p.Wait {
 						// start a new deploy
-						_, err = client.Promote(owner, name, int(build.Number), p.Deploy, params)
+						promotedBuild, err := client.Promote(owner, name, int(build.Number), p.Deploy, params)
 						if err != nil {
 							if waiting {
 								continue
 							}
 							return fmt.Errorf("Error: unable to trigger deploy for %s - err %v", entry, err)
 						}
-						fmt.Printf("Starting deploy for %s/%s env - %s build - %d.\n", owner, name, p.Deploy, build.Number)
+						fmt.Printf("Starting deploy for %s/%s env - %s build - https://drone-1.prima.it/primait/%s/%d.\n", owner, name, p.Deploy, name, promotedBuild.Number)
 						logParams(params, p.ParamsEnv)
 						break I
 					}
