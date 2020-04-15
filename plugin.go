@@ -130,8 +130,16 @@ func (p *Plugin) Exec() error {
 						}
 
 						for _, b := range builds {
-							commit := b.After
-							if commit[0:15] == branch {
+							commit := b.After[0:15]
+							// Check if build with event: promote, deploy_to: qa and commit ref already exists
+							if commit == branch &&
+								b.Event == "promote" &&
+								b.Deploy == "qa" &&
+								(b.Status == "running" || b.Status == "success") &&
+								name != "hutch" {
+								fmt.Printf("Info: drone build for %s already exists. Skip...\n\n", branch)
+								break I
+							} else if commit == branch {
 								build = b
 								break
 							}
@@ -271,7 +279,7 @@ func logParams(params map[string]string, paramsEnv []string) {
 			if fromEnv {
 				v = "[from-environment]"
 			}
-			fmt.Printf("  - %s: %s\n", k, v)
+			fmt.Printf("  - %s: %s\n\n", k, v)
 		}
 	}
 }
