@@ -132,7 +132,11 @@ func (p *Plugin) Exec() error {
 						for _, b := range builds {
 							commit := b.After[0:15]
 							// Check if build with event: promote, deploy_to: qa and commit ref already exists
-							if commit == branch && b.Event == "promote" && b.Deploy == "qa" && (b.Status == "running" || b.Status == "success") {
+							if commit == branch &&
+								b.Event == "promote" &&
+								b.Deploy == "qa" &&
+								(b.Status == "running" || b.Status == "success") &&
+								name != "hutch" {
 								fmt.Printf("Info: drone build for %s already exists. Skip...\n\n", branch)
 								break I
 							} else if commit == branch {
