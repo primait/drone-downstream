@@ -60,6 +60,8 @@ func (p *Plugin) Exec() error {
 		params[k] = v
 	}
 
+	logParams(params, p.ParamsEnv)
+
 	config := new(oauth2.Config)
 
 	auther := config.Client(
@@ -167,8 +169,7 @@ func (p *Plugin) Exec() error {
 							}
 							return fmt.Errorf("Error: unable to trigger deploy for %s - err %v", entry, err)
 						}
-						fmt.Printf("Starting deploy for %s/%s env - %s build - https://drone-1.prima.it/primait/%s/%d.\n", owner, name, p.Deploy, name, promotedBuild.Number)
-						logParams(params, p.ParamsEnv)
+						fmt.Printf("Starting deploy for %s/%s env - %s build - https://drone-1.prima.it/primait/%s/%d.\n\n", owner, name, p.Deploy, name, promotedBuild.Number)
 						break I
 					}
 				}
@@ -214,7 +215,6 @@ func (p *Plugin) Exec() error {
 						return fmt.Errorf("Error: unable to trigger build for %s.\n", entry)
 					}
 					fmt.Printf("Restarting build %d for %s\n", build.Number, entry)
-					logParams(params, p.ParamsEnv)
 
 					break I
 				}
@@ -273,7 +273,7 @@ func parseParams(paramList []string) (map[string]string, error) {
 
 func logParams(params map[string]string, paramsEnv []string) {
 	if len(params) > 0 {
-		fmt.Println("  with params:")
+		fmt.Println("Triggers will be launch with params:")
 		for k, v := range params {
 			fromEnv := false
 			for _, e := range paramsEnv {
