@@ -126,30 +126,30 @@ func (p *Plugin) Exec() error {
 					} else {
 						fmt.Printf("Info: searching revision %s in %s/%s.\n", branch, owner, name)
 						// Get build by revision
-						J:
-							for i := 1; i <= 5; i++ {
-								opts := drone.ListOptions{Page: i, Size: 100}
-								builds, err := client.BuildList(owner, name, opts)
-								if err != nil {
-									return fmt.Errorf("Error: unable to get build list for %s in page %d", entry, i)
-								}
+					J:
+						for i := 1; i <= 5; i++ {
+							opts := drone.ListOptions{Page: i, Size: 100}
+							builds, err := client.BuildList(owner, name, opts)
+							if err != nil {
+								return fmt.Errorf("Error: unable to get build list for %s in page %d", entry, i)
+							}
 
-								for _, b := range builds {
-									commit := b.After[0:15]
-									// Check if build with event: promote, deploy_to: qa and commit ref already exists
-									if commit == branch &&
-										b.Event == "promote" &&
-										b.Deploy == "qa" &&
-										(b.Status == "running" || b.Status == "success") &&
-										name != "hutch" {
-										fmt.Printf("Info: drone build for %s already exists. Skip...\n\n", branch)
-										break I
-									} else if commit == branch {
-										build = b
-										break J
-									}
+							for _, b := range builds {
+								commit := b.After[0:15]
+								// Check if build with event: promote, deploy_to: qa and commit ref already exists
+								if commit == branch &&
+									b.Event == "promote" &&
+									b.Deploy == "qa" &&
+									(b.Status == "running" || b.Status == "success") &&
+									name != "hutch" || name != "domus" {
+									fmt.Printf("Info: drone build for %s already exists. Skip...\n\n", branch)
+									break I
+								} else if commit == branch {
+									build = b
+									break J
 								}
 							}
+						}
 
 						if build == nil {
 							return fmt.Errorf("Error: unable to get build for %s", entry)
